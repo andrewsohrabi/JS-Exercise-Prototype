@@ -39,8 +39,24 @@ Airplane.prototype.land = function () {
         + It should return a string with `name` and `age`. Example: "Mary, 50"
 */
 
-function Person() {
+function Person(name,age) {
+  this.name = name;
+  this.age = age;
+  this.stomach = [];
+}
 
+Person.prototype.eat = function(someFood) {
+  if (this.stomach.length < 10) {
+    this.stomach.push(someFood);
+  }
+}
+
+Person.prototype.poop = function() {
+  this.stomach = [];
+}
+
+Person.prototype.toString = function(){
+  return `${this.name}, ${this.age}`
 }
 
 /*
@@ -57,9 +73,34 @@ function Person() {
         + The `drive` method should return a string "I ran out of fuel at x miles!" x being `odometer`.
 */
 
-function Car() {
-
+function Car(model, milesPerGallon) {
+  this.model = model;
+  this.milesPerGallon = milesPerGallon;
+  this.tank = 0;
+  this.odometer = 0;
 }
+
+Car.prototype.fill = function(gallons) {
+  this.tank += gallons;
+}
+
+Car.prototype.drive = function(distance){
+  
+  // this.odometer += this.driveDistance;
+  let driveDistance = (distance/this.milesPerGallon);
+  let maxDistance = this.milesPerGallon * this.tank;
+  //console.log(maxDistance);
+  //console.log(this.tank)
+  if(distance > maxDistance || this.tank <= 0){
+    let diff = distance - maxDistance;
+    this.tank = 0;
+    this.odometer =+ maxDistance;
+    return `I ran out of fuel at ${this.odometer} miles!`
+  } else {
+    this.tank -= driveDistance;
+    this.odometer += distance;
+  };
+};
 
 /*
   TASK 3
@@ -68,18 +109,68 @@ function Car() {
     - Besides the methods on Person.prototype, babies have the ability to `.play()`:
         + Should return a string "Playing with x", x being the favorite toy.
 */
-function Baby() {
 
+Baby.prototype = Object.create(Person.prototype); 
+//The new object has Person.prototype as its prototype and will therefore inherit, if and when needed, all the methods available on Person.prototype.
+
+function Baby(name,age,favoriteToy) {
+  Person.call(this,name,age) // binds this to Person and lists the common attributes
+  this.favoriteToy = favoriteToy; // initializes new attribute specific to baby
+}
+
+
+Baby.prototype.play = function(){
+  return `Playing with ${this.favoriteToy}`
 }
 
 /* 
   TASK 4
 
   In your own words explain the four principles for the "this" keyword below:
-  1. 
-  2. 
-  3. 
-  4. 
+  1. Window binding - if no context is given to "this", defaults to the window or global object in node
+  2. Implicit binding - it's what is to the left of the dot and only applies to objects with methods
+  
+  const myGhost = {
+    name: 'Casper',
+    boo: '👻 booooo',
+    ghost: function(){
+      console.log(this.boo);
+    }
+  } myGhost.ghost();
+
+  3. Explicit Binding - call, apply, bind
+
+    .call
+    immediately invokes function where you pass arguments one at a time
+    
+    function ghost(){
+      console.log(this.boo);
+    }
+
+    const myGhost = {
+      name: 'Casper',
+      boo: '👻 boooo'
+    }
+
+    ghost.call(myGhost); ghost function is being invoked on myGhost, which binds the "this" keyword to to myGhost so console.log(this.boo) now works
+
+    .apply - similar to .call but you pass in an array that contains arguments
+
+    .bind - does not invoke the function, but instead returns a new function that can be invoked later
+    
+  function ghost(){
+  console.log(this.boo);
+  }
+
+  const myGhost = {
+    name: 'Casper',
+    boo: '👻 boooo'
+  }
+const friendlyGhost = ghost.bind(myGhost);
+friendlyGhost();
+
+  4. New Binding 
+  uses the new keyword to create a new instance of the object, then executes the constructor function to fill the properties whatever you are copying
 */
 
 
